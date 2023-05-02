@@ -1,7 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from time import sleep
-import mysql.connector
+
+from connect import con, cursor
 
 
 class Web:
@@ -16,13 +17,8 @@ class Web:
                 'xpath': '/html/body/main/div[2]/div/div/div[1]/span[%numero%]'
             }
         }
-        self.con = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='mega_sena'
-        )
-        self.cursor = self.con.cursor()
+        self.con = con
+        self.cursor = cursor
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
         self.criar_tabela()
@@ -41,14 +37,15 @@ class Web:
             numeros = []
             for j in range(6):
                 numero = (int(self.driver.find_element(By.XPATH, self.map['numero']['xpath'].replace('%numero%',
-                                                                                                          f'{k + 1}')).text))
+                                                                                                     f'{k + 1}')).text))
                 if numero != "Mega da Virada":
                     numeros.append(numero)
                     k += 1
 
             resultados.append((sorteio, *numeros))
 
-        query = f"INSERT INTO ms_{self.year} (sorteio, numero1, numero2, numero3, numero4, numero5, numero6) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        query = f"INSERT INTO ms_{self.year} (sorteio, numero1, numero2, numero3, numero4, numero5, numero6) VALUES (" \
+                f"%s, %s, %s, %s, %s, %s, %s)"
         self.cursor.executemany(query, resultados)
 
         self.con.commit()
@@ -64,5 +61,7 @@ class Web:
             self.cursor.execute(f"DROP TABLE IF EXISTS ms_{self.year}")
 
         self.cursor.execute(
-            f"CREATE TABLE ms_{self.year} (id INT AUTO_INCREMENT PRIMARY KEY, sorteio INT NOT NULL, numero1 NUMERIC(2) NOT NULL, numero2 NUMERIC(2) NOT NULL, numero3 NUMERIC(2) NOT NULL, numero4 NUMERIC(2) NOT NULL, numero5 NUMERIC(2) NOT NULL, numero6 NUMERIC(2) NOT NULL)")
+            f"CREATE TABLE ms_{self.year} (id INT AUTO_INCREMENT PRIMARY KEY, sorteio INT NOT NULL, numero1 NUMERIC("
+            f"2) NOT NULL, numero2 NUMERIC(2) NOT NULL, numero3 NUMERIC(2) NOT NULL, numero4 NUMERIC(2) NOT NULL, "
+            f"numero5 NUMERIC(2) NOT NULL, numero6 NUMERIC(2) NOT NULL)")
         self.con.commit()
