@@ -1,10 +1,10 @@
+from collections import Counter
 from tkinter import *
 from tkinter import ttk
-from connect import con, cursor
+from connect import cursor
 import matplotlib.pyplot as plt
 import numpy as np
 from web01 import Web
-from collections import Counter
 
 janela = Tk()
 
@@ -45,6 +45,9 @@ class AppMS:
         self.btPesquisar = ttk.Button(self.frame_0, text="Pesquisar", command=self.pesquisar)
         self.btPesquisar.pack(side=RIGHT, padx=10, pady=10)
 
+        self.btGrafico = ttk.Button(self.frame_2, text="Gráfico", command=self.graph)
+        self.btGrafico.pack(side=LEFT, padx=10, pady=1)
+
     def labels(self):
         self.label_titulo = Label(self.frame_0, text="MEGA SENA", font=("Arial", 20), bg='#7AFF9E')
         self.label_titulo.place(relx=0.05, rely=0.21)
@@ -69,12 +72,12 @@ class AppMS:
         self.listaCli.heading('#0', text='')
         self.listaCli.heading('#1', text='ID')
         self.listaCli.heading('#2', text='Sorteio')
-        self.listaCli.heading('#3', text='numero1')
-        self.listaCli.heading('#4', text='numero2')
-        self.listaCli.heading('#5', text='numero3')
-        self.listaCli.heading('#6', text='numero4')
-        self.listaCli.heading('#7', text='numero5')
-        self.listaCli.heading('#8', text='numero6')
+        self.listaCli.heading('#3', text='N1')
+        self.listaCli.heading('#4', text='N2')
+        self.listaCli.heading('#5', text='N3')
+        self.listaCli.heading('#6', text='N4')
+        self.listaCli.heading('#7', text='N5')
+        self.listaCli.heading('#8', text='N6')
 
         self.listaCli.column('#0', width=0)
         self.listaCli.column('#1', width=15)
@@ -94,7 +97,6 @@ class AppMS:
 
     def atualizar(self):
         self.limpar()
-        self.graph()
         ano = self.combo_ano.get()
 
         cursor.execute(f"SELECT id, sorteio, numero1, numero2, numero3, numero4, numero5, numero6 FROM ms_{ano}")
@@ -106,6 +108,7 @@ class AppMS:
         ano = self.combo_ano.get()
         Web(ano)
 
+        self.limpar()
         query = f"SELECT * FROM ms_{ano}"
         cursor.execute(query)
 
