@@ -49,8 +49,6 @@ class Web:
         self.cursor.executemany(query, resultados)
 
         self.con.commit()
-        self.cursor.close()
-        self.con.close()
 
     def criar_tabela(self):
         self.cursor.execute(
